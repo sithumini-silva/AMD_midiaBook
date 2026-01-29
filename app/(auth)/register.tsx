@@ -14,7 +14,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { register } from "../../services/authService";
+import { registerPatient } from "../../services/authService";
 
 const Register = () => {
   const router = useRouter();
@@ -45,7 +45,7 @@ const Register = () => {
     }
 
     setIsLoadingReg(true);
-    await register(email, password)
+    await registerPatient(email, password)
       .then((res) => {
         console.log(res);
         Alert.alert("Success", "Account created successfully!", [

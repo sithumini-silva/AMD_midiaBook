@@ -13,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from "react-native";
-import { login } from "../../services/authService";
+import { loginUser } from "../../services/authService";
 
 const Login = () => {
   const router = useRouter();
@@ -35,10 +35,10 @@ const Login = () => {
     if (isLoadingLogin) return;
     setIsLoadingLogin(true);
 
-    await login(email, password)
+    await loginUser(email, password)
       .then((res) => {
         console.log(res);
-        router.push("/dash");
+        router.push("/");
       })
       .catch((err) => {
         console.error(err);
