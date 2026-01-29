@@ -1,5 +1,5 @@
 import { Redirect } from "expo-router";
-import { use } from "../../hooks/useAuth";
+import { useAuth } from "../../hooks/useAuth";
 import { JSX } from "react";
 
 export default function ProtectedRoute({
