@@ -8,13 +8,13 @@ export default function Index() {
   const router = useRouter();
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) router.replace("/login");
-      else if (user.role === "admin") router.replace("/admindash");
-      else if (user.role === "doctor") router.replace("/doctordash");
-      else router.replace("/patientdash");
-    }
-  }, [user, loading]);
+    if (loading) return;
+
+    if (!user) router.replace("/login");
+    else if (user.role === "admin") router.replace("/admindash");
+    else if (user.role === "doctor") router.replace("/doctordash");
+    else router.replace("/patientdash");
+  }, [loading, user]);
 
   if (loading) return <Loader />;
 
