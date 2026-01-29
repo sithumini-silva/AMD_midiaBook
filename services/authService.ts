@@ -1,18 +1,26 @@
+import { auth, db } from "./firebase";
 import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
-  signOut
-} from "firebase/auth"
-import { auth } from "./firebase"
+} from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
-export const register = (email: string, password: string) => {
-  return createUserWithEmailAndPassword(auth, email, password)
-}
+export const registerPatient = async (email: string, password: string) => {
+  const userCred = await createUserWithEmailAndPassword(
+    auth,
+    email,
+    password
+  );
 
-export const login = (email: string, password: string) => {
-  return signInWithEmailAndPassword(auth, email, password)
-}
+  await setDoc(doc(db, "users", userCred.user.uid), {
+    email,
+    role: "patient",
+    createdAt: new Date(),
+  });
 
-export const logout = () => {
-  return signOut(auth)
-}
+  return userCred;
+};
+
+export const loginUser = async (email: string, password: string) => {
+  return await signInWithEmailAndPassword(auth, email, password);
+};
