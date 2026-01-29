@@ -5,22 +5,20 @@ import {
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
 
-export const registerPatient = async (email: string, password: string) => {
-  const userCred = await createUserWithEmailAndPassword(
-    auth,
-    email,
-    password
-  );
+export const registerPatient = async (
+  email: string,
+  password: string
+) => {
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
 
-  await setDoc(doc(db, "users", userCred.user.uid), {
+  await setDoc(doc(db, "users", cred.user.uid), {
     email,
     role: "patient",
-    createdAt: new Date(),
   });
 
-  return userCred;
+  return cred;
 };
 
 export const loginUser = async (email: string, password: string) => {
-  return await signInWithEmailAndPassword(auth, email, password);
+  return signInWithEmailAndPassword(auth, email, password);
 };
