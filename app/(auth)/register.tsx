@@ -16,6 +16,7 @@ import { registerPatient } from "../../services/authService";
 
 const Register = () => {
   const router = useRouter();
+
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -28,20 +29,28 @@ const Register = () => {
       Alert.alert("Missing Fields", "Please fill all fields.");
       return;
     }
+
     if (password !== confirmPassword) {
       Alert.alert("Password Mismatch", "Passwords do not match.");
       return;
     }
+
     if (password.length < 6) {
       Alert.alert("Weak Password", "Password must be at least 6 characters.");
       return;
     }
 
     setIsLoadingReg(true);
+
     try {
       await registerPatient(email, password);
-      Alert.alert("Success", "Account created!", [
-        { text: "OK", onPress: () => router.back() },
+
+      // ✅ SUCCESS → redirect to login
+      Alert.alert("Success", "Account created successfully!", [
+        {
+          text: "Go to Login",
+          onPress: () => router.replace("/(auth)/login"),
+        },
       ]);
     } catch (err) {
       console.error(err);
@@ -54,12 +63,16 @@ const Register = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1 }}
+      style={{ flex: 1, backgroundColor: "#F3F4F6" }}
     >
       <ScrollView
-        contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 20 }}
+        contentContainerStyle={{
+          flexGrow: 1,
+          justifyContent: "center",
+          padding: 20,
+        }}
       >
-        <View style={{ flex: 1 }}>
+        <View>
           <Text
             style={{
               fontSize: 28,
@@ -78,6 +91,7 @@ const Register = () => {
               placeholder="Enter email"
               value={email}
               onChangeText={setEmail}
+              autoCapitalize="none"
               style={{
                 borderWidth: 1,
                 borderColor: "#ccc",
@@ -136,10 +150,16 @@ const Register = () => {
                 style={{ flex: 1 }}
               />
               <TouchableOpacity
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                onPress={() =>
+                  setShowConfirmPassword(!showConfirmPassword)
+                }
               >
                 <Ionicons
-                  name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
+                  name={
+                    showConfirmPassword
+                      ? "eye-off-outline"
+                      : "eye-outline"
+                  }
                   size={24}
                 />
               </TouchableOpacity>
@@ -154,19 +174,36 @@ const Register = () => {
                 padding: 12,
                 borderRadius: 8,
                 alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "center",
               }}
             >
               {isLoadingReg ? (
-                <>
-                  <ActivityIndicator color="#fff" />
-                  <Text style={{ color: "#fff", marginLeft: 10 }}>Creating...</Text>
-                </>
+                <ActivityIndicator color="#fff" />
               ) : (
-                <Text style={{ color: "#fff", fontWeight: "bold" }}>Create Account</Text>
+                <Text style={{ color: "#fff", fontWeight: "bold" }}>
+                  Create Account
+                </Text>
               )}
             </TouchableOpacity>
+
+            {/* 🔗 Login Link */}
+            <View style={{ marginTop: 20, alignItems: "center" }}>
+              <Text style={{ color: "#6b7280" }}>
+                Already have an account?
+              </Text>
+              <TouchableOpacity
+                onPress={() => router.replace("/(auth)/login")}
+              >
+                <Text
+                  style={{
+                    color: "#f97316",
+                    fontWeight: "bold",
+                    marginTop: 5,
+                  }}
+                >
+                  Login
+                </Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </ScrollView>
