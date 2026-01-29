@@ -1,7 +1,5 @@
-import { JSX } from "react";
-import { useAuth } from "../../hooks/useAuth";
 import { Redirect } from "expo-router";
-import Loader from "../../components/Loader";
+import { useAuth } from "../../hooks/useAuth";
 
 export default function ProtectedRoute({
   children,
@@ -12,7 +10,7 @@ export default function ProtectedRoute({
 }) {
   const { user, loading } = useAuth();
 
-  if (loading) return <Loader />;
+  if (loading) return null;
   if (!user) return <Redirect href="/login" />;
   if (user.role !== role) return <Redirect href="/" />;
 
