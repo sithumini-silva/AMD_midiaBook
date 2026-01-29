@@ -6,8 +6,7 @@ export default function AdminDash() {
     <ProtectedRoute role="admin">
       <View>
         <Text style={{ fontSize: 24 }}>Admin Dashboard</Text>
-        <Text>• Add Doctors</Text>
-        <Text>• View Users</Text>
+        <Text>• Manage Doctors</Text>
         <Text>• View Appointments</Text>
       </View>
     </ProtectedRoute>
