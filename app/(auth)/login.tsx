@@ -17,18 +17,14 @@ import { loginUser } from "../../services/authService";
 
 const Login = () => {
   const router = useRouter();
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [isLoadingLogin, setIsLoadingLogin] = useState<boolean>(false);
-  const [showPassword, setShowPassword] = useState<boolean>(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoadingLogin, setIsLoadingLogin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
-    if (!email.trim()) {
-      Alert.alert("Error", "Please enter your email");
-      return;
-    }
-    if (!password.trim()) {
-      Alert.alert("Error", "Please enter your password");
+    if (!email.trim() || !password.trim()) {
+      Alert.alert("Error", "Please enter your email and password");
       return;
     }
 
@@ -38,18 +34,12 @@ const Login = () => {
     await loginUser(email, password)
       .then((res) => {
         console.log(res);
-        router.push("/");
+        router.push("/"); // Redirect handled by index.tsx
       })
-      .catch((err) => {
-        console.error(err);
-        Alert.alert(
-          "Login Failed",
-          "Please check your credentials and try again",
-        );
+      .catch(() => {
+        Alert.alert("Login Failed", "Invalid credentials.");
       })
-      .finally(() => {
-        setIsLoadingLogin(false);
-      });
+      .finally(() => setIsLoadingLogin(false));
   };
 
   return (
@@ -57,244 +47,46 @@ const Login = () => {
       behavior={Platform.OS === "ios" ? "padding" : "height"}
       style={{ flex: 1, backgroundColor: "#F3F4F6" }}
     >
-      <ScrollView
-        contentContainerStyle={{
-          flexGrow: 1,
-          justifyContent: "center",
-          padding: 20,
-        }}
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView contentContainerStyle={{ flexGrow: 1, justifyContent: "center", padding: 20 }}>
         <View style={{ flex: 1, justifyContent: "center" }}>
-          {/* Header Section */}
-          <View style={{ alignItems: "center", marginBottom: 20 }}>
-            <View style={{ alignItems: "center", marginBottom: 10 }}>
-              <View
-                style={{
-                  backgroundColor: "#F97316",
-                  padding: 15,
-                  borderRadius: 50,
-                  marginBottom: 10,
-                }}
-              >
-                <Ionicons name="paw" size={40} color="white" />
-              </View>
-              <Text
-                style={{ fontSize: 28, fontWeight: "bold", color: "#111827" }}
-              >
-                PetoCloud
-              </Text>
-              <Text style={{ fontSize: 14, color: "#6B7280" }}>
-                Your pet's health companion
-              </Text>
-            </View>
-          </View>
+          <Text style={{ fontSize: 28, fontWeight: "bold", textAlign: "center", marginBottom: 20 }}>
+            MediBook Login
+          </Text>
 
-          {/* Login Form Card */}
-          <View
-            style={{
-              backgroundColor: "#fff",
-              borderRadius: 12,
-              padding: 20,
-              shadowColor: "#000",
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-              elevation: 5,
-            }}
-          >
-            <Text style={{ fontSize: 22, fontWeight: "bold", marginBottom: 5 }}>
-              Welcome Back!
-            </Text>
-            <Text style={{ fontSize: 14, color: "#6B7280", marginBottom: 20 }}>
-              Sign in to manage your pet's care
-            </Text>
+          <View style={{ backgroundColor: "#fff", padding: 20, borderRadius: 12 }}>
+            <Text>Email</Text>
+            <TextInput
+              placeholder="Enter email"
+              value={email}
+              onChangeText={setEmail}
+              style={{ borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8, marginBottom: 15 }}
+            />
 
-            {/* Email Input */}
-            <View style={{ marginBottom: 15 }}>
-              <Text
-                style={{ fontSize: 14, fontWeight: "600", marginBottom: 5 }}
-              >
-                Email
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  borderWidth: 1,
-                  borderColor: "#D1D5DB",
-                  borderRadius: 8,
-                  paddingHorizontal: 10,
-                }}
-              >
-                <TextInput
-                  placeholder="Enter your email"
-                  style={{ flex: 1, height: 40, color: "#111827" }}
-                  placeholderTextColor="#9CA3AF"
-                  value={email}
-                  onChangeText={setEmail}
-                  keyboardType="email-address"
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                />
-                <Ionicons name="mail-outline" size={24} color="#9CA3AF" />
-              </View>
+            <Text>Password</Text>
+            <View style={{ flexDirection: "row", borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 10, marginBottom: 20 }}>
+              <TextInput
+                placeholder="Enter password"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                style={{ flex: 1 }}
+              />
+              <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+                <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={24} />
+              </TouchableOpacity>
             </View>
 
-            {/* Password Input */}
-            <View style={{ marginBottom: 15 }}>
-              <Text
-                style={{ fontSize: 14, fontWeight: "600", marginBottom: 5 }}
-              >
-                Password
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  alignItems: "center",
-                  borderWidth: 1,
-                  borderColor: "#D1D5DB",
-                  borderRadius: 8,
-                  paddingHorizontal: 10,
-                }}
-              >
-                <TextInput
-                  placeholder="Enter your password"
-                  style={{ flex: 1, height: 40, color: "#111827" }}
-                  placeholderTextColor="#9CA3AF"
-                  secureTextEntry={!showPassword}
-                  value={password}
-                  onChangeText={setPassword}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                >
-                  <Ionicons
-                    name={showPassword ? "eye-off-outline" : "eye-outline"}
-                    size={24}
-                    color="#9CA3AF"
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Login Button */}
             <TouchableOpacity
-              style={{
-                backgroundColor: isLoadingLogin ? "#F9731699" : "#F97316",
-                paddingVertical: 12,
-                borderRadius: 8,
-                alignItems: "center",
-                flexDirection: "row",
-                justifyContent: "center",
-                marginBottom: 10,
-              }}
               onPress={handleLogin}
               disabled={isLoadingLogin}
+              style={{ backgroundColor: "#f97316", padding: 15, borderRadius: 8, alignItems: "center" }}
             >
-              {isLoadingLogin ? (
-                <>
-                  <ActivityIndicator color="#fff" size="small" />
-                  <Text style={{ color: "#fff", marginLeft: 10 }}>
-                    Signing in...
-                  </Text>
-                </>
-              ) : (
-                <Text style={{ color: "#fff", fontWeight: "600" }}>
-                  Sign In
-                </Text>
-              )}
+              {isLoadingLogin ? <ActivityIndicator color="#fff" /> : <Text style={{ color: "#fff" }}>Login</Text>}
             </TouchableOpacity>
 
-            {/* Forgot Password */}
-            <Pressable style={{ alignSelf: "flex-end", marginBottom: 15 }}>
-              <Text style={{ color: "#F97316" }}>Forgot Password?</Text>
+            <Pressable onPress={() => router.push("/(auth)/register")} style={{ marginTop: 15, alignItems: "center" }}>
+              <Text style={{ color: "#f97316" }}>Create Account</Text>
             </Pressable>
-
-            {/* Divider */}
-            <View
-              style={{
-                flexDirection: "row",
-                alignItems: "center",
-                marginVertical: 10,
-              }}
-            >
-              <View
-                style={{ flex: 1, height: 1, backgroundColor: "#D1D5DB" }}
-              />
-              <Text style={{ marginHorizontal: 10, color: "#6B7280" }}>or</Text>
-              <View
-                style={{ flex: 1, height: 1, backgroundColor: "#D1D5DB" }}
-              />
-            </View>
-
-            {/* Register Link */}
-            <Pressable
-              onPress={() => router.push("/register")}
-              style={{
-                paddingVertical: 12,
-                borderRadius: 8,
-                alignItems: "center",
-                backgroundColor: "#E5E7EB",
-                marginBottom: 10,
-              }}
-            >
-              <Text style={{ fontWeight: "600", color: "#111827" }}>
-                Create New Account
-              </Text>
-            </Pressable>
-
-            <Pressable
-              onPress={() => router.push("/")}
-              style={{
-                paddingVertical: 12,
-                borderRadius: 8,
-                alignItems: "center",
-                backgroundColor: "#E5E7EB",
-              }}
-            >
-              <Text style={{ fontWeight: "600", color: "#111827" }}>
-                Back to Home
-              </Text>
-            </Pressable>
-
-            {/* Features */}
-            <View style={{ marginTop: 20 }}>
-              <Text
-                style={{ fontSize: 14, fontWeight: "600", marginBottom: 10 }}
-              >
-                Manage your pet's:
-              </Text>
-              <View
-                style={{
-                  flexDirection: "row",
-                  flexWrap: "wrap",
-                  justifyContent: "space-between",
-                }}
-              >
-                {[
-                  { icon: "medical-outline", text: "Health" },
-                  { icon: "calendar-outline", text: "Schedule" },
-                  { icon: "nutrition-outline", text: "Nutrition" },
-                  { icon: "location-outline", text: "Vets" },
-                ].map((item, index) => (
-                  <View
-                    key={index}
-                    style={{
-                      flexDirection: "row",
-                      alignItems: "center",
-                      marginBottom: 8,
-                    }}
-                  >
-                    <Ionicons
-                      name={item.icon as any}
-                      size={20}
-                      color="#F97316"
-                    />
-                    <Text style={{ marginLeft: 5 }}>{item.text}</Text>
-                  </View>
-                ))}
-              </View>
-            </View>
           </View>
         </View>
       </ScrollView>

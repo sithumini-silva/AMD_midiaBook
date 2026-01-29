@@ -8,8 +8,8 @@ export default function PatientDash() {
 
   return (
     <ProtectedRoute role="patient">
-      <View>
-        <Text style={{ fontSize: 24 }}>Find Doctors</Text>
+      <View style={{ padding: 20 }}>
+        <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 10 }}>Find Doctors</Text>
         <FlatList
           data={doctors}
           keyExtractor={(item) => item.id}

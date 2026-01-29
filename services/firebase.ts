@@ -21,23 +21,4 @@ const firebaseConfig = {
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
-export const db = getFirestore(app)
-
-
-// let analytics;
-// if (typeof window !== "undefined") {
-//   const { getAnalytics, isSupported } = require("firebase/analytics");
-//   isSupported().then(supported => {
-//     if (supported) analytics = getAnalytics(app);
-//   });
-// }
-
-let analytics;
-if (typeof window !== "undefined") {
-  const { getAnalytics, isSupported } = require("firebase/analytics");
-  isSupported().then((supported: boolean) => {
-    if (supported) {
-      analytics = getAnalytics(app);
-    }
-  });
-}
+export const db = getFirestore(app);

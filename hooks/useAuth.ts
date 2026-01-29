@@ -1,13 +1,13 @@
-import { useContext } from "react";
-import { AuthContext } from "../context/AuthContext";
+import { auth, db } from "../services/firebase";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
 
-// Named export
-export function useAuth() {
-  const context = useContext(AuthContext);
+export const registerPatient = async (email: string, password: string) => {
+  const cred = await createUserWithEmailAndPassword(auth, email, password);
+  await setDoc(doc(db, "users", cred.user.uid), { email, role: "patient" });
+  return cred;
+};
 
-  if (!context) {
-    throw new Error("useAuth must be used within an AuthProvider");
-  }
-
-  return context; // returns { user, loading }
-}
+export const loginUser = async (email: string, password: string) => {
+  return signInWithEmailAndPassword(auth, email, password);
+};

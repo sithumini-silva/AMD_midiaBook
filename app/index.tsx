@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { useRouter } from "expo-router";
-import { useAuth } from "../hooks/useAuth";
+import { useAuth } from "../context/AuthContext"; // <--- corrected path
 import Loader from "../components/Loader";
 
 export default function Index() {
@@ -10,10 +10,10 @@ export default function Index() {
   useEffect(() => {
     if (loading) return;
 
-    if (!user) router.replace("/login");
-    else if (user.role === "admin") router.replace("/admindash");
-    else if (user.role === "doctor") router.replace("/doctordash");
-    else router.replace("/patientdash");
+    if (!user) router.replace("/(auth)/login");
+    else if (user.role === "admin") router.replace("/(dashboard)/admindash");
+    else if (user.role === "doctor") router.replace("/(dashboard)/doctordash");
+    else router.replace("/(dashboard)/patientdash");
   }, [user, loading]);
 
   if (loading) return <Loader />;
