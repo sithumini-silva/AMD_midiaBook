@@ -13,17 +13,14 @@ export const AuthProvider = ({ children }: any) => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
         const snap = await getDoc(doc(db, "users", firebaseUser.uid));
-
         if (snap.exists()) {
           setUser({ uid: firebaseUser.uid, ...snap.data() });
         } else {
-          // ❗ SAFETY FALLBACK
           setUser(null);
         }
       } else {
         setUser(null);
       }
-
       setLoading(false);
     });
 
