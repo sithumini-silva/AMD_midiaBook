@@ -1,15 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, TextInput } from "react-native";
+import { View, Text, ScrollView, TouchableOpacity, Alert, ActivityIndicator, TextInput, Platform } from "react-native";
 import { db } from "../../services/firebase";
 import { collection, getDocs, addDoc } from "firebase/firestore";
+import DateTimePicker from "@react-native-community/datetimepicker";
 
 type Doctor = { id: string; fullName: string; speciality: string };
 
 const PatientDashboard = ({ patientName }: { patientName: string }) => {
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [date, setDate] = useState<Date | null>(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [time, setTime] = useState<Date | null>(null);
+  const [showTimePicker, setShowTimePicker] = useState(false);
   const [loading, setLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
@@ -34,14 +37,12 @@ const PatientDashboard = ({ patientName }: { patientName: string }) => {
         setLoading(false);
       }
     };
-
     fetchDoctors();
   }, []);
 
-  // Create appointment
   const handleSubmit = async () => {
     if (!selectedDoctor || !date || !time) {
-      Alert.alert("Missing Fields", "Please fill all details.");
+      Alert.alert("Missing Fields", "Please select doctor, date, and time.");
       return;
     }
 
@@ -52,14 +53,14 @@ const PatientDashboard = ({ patientName }: { patientName: string }) => {
         patientName,
         doctorId: doctor?.id,
         doctorName: doctor?.fullName,
-        date,
-        time,
+        date: date.toISOString().split("T")[0],
+        time: time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
         status: "pending",
       });
       Alert.alert("Success", "Appointment created!");
       setSelectedDoctor("");
-      setDate("");
-      setTime("");
+      setDate(null);
+      setTime(null);
     } catch (err) {
       console.error(err);
       Alert.alert("Error", "Failed to create appointment.");
@@ -92,20 +93,46 @@ const PatientDashboard = ({ patientName }: { patientName: string }) => {
       }
 
       <Text style={{ fontSize: 20, fontWeight: "bold", marginTop: 20 }}>Book Appointment</Text>
-      <Text>Date</Text>
-      <TextInput
-        placeholder="YYYY-MM-DD"
-        value={date}
-        onChangeText={setDate}
-        style={{ borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8, marginBottom: 10 }}
-      />
-      <Text>Time</Text>
-      <TextInput
-        placeholder="HH:MM AM/PM"
-        value={time}
-        onChangeText={setTime}
-        style={{ borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8, marginBottom: 20 }}
-      />
+
+      {/* Date Picker */}
+      <TouchableOpacity
+        onPress={() => setShowDatePicker(true)}
+        style={{ padding: 10, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, marginBottom: 10 }}
+      >
+        <Text>{date ? date.toDateString() : "Select Date"}</Text>
+      </TouchableOpacity>
+      {showDatePicker && (
+        <DateTimePicker
+          value={date || new Date()}
+          mode="date"
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          minimumDate={new Date()}
+          onChange={(event, selected) => {
+            setShowDatePicker(false);
+            if (selected) setDate(selected);
+          }}
+        />
+      )}
+
+      {/* Time Picker */}
+      <TouchableOpacity
+        onPress={() => setShowTimePicker(true)}
+        style={{ padding: 10, borderWidth: 1, borderColor: "#ccc", borderRadius: 8, marginBottom: 20 }}
+      >
+        <Text>{time ? time.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) : "Select Time"}</Text>
+      </TouchableOpacity>
+      {showTimePicker && (
+        <DateTimePicker
+          value={time || new Date()}
+          mode="time"
+          is24Hour={false}
+          display={Platform.OS === "ios" ? "spinner" : "default"}
+          onChange={(event, selected) => {
+            setShowTimePicker(false);
+            if (selected) setTime(selected);
+          }}
+        />
+      )}
 
       <TouchableOpacity
         onPress={handleSubmit}
