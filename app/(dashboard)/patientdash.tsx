@@ -11,16 +11,14 @@ import {
 import { db } from "../../services/firebase";
 import { collection, getDocs, addDoc, query, where } from "firebase/firestore";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
-import { useAuth } from "../../context/AuthContext"; // assuming you have this context
+import { useAuth } from "../../context/AuthContext";
 
-// Doctor type
 type Doctor = {
   id: string;
   fullName: string;
   speciality: string;
 };
 
-// Time slots
 const TIME_SLOTS = [
   "09:00 AM","09:30 AM","10:00 AM","10:30 AM",
   "11:00 AM","11:30 AM","12:00 PM","02:00 PM",
@@ -28,12 +26,8 @@ const TIME_SLOTS = [
 ];
 
 const PatientDashboard = () => {
-  const { user } = useAuth(); // get the logged-in patient
-  const patientName = user?.fullName; // automatically set patientName
-    if (!patientName) {
-      Alert.alert("Error", "Patient name missing! Check registration.");
-      return;
-    }
+  const { user } = useAuth();
+  const patientName = user?.fullName; // ✅ must exist
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
@@ -48,7 +42,6 @@ const PatientDashboard = () => {
   const [loadingDoctors, setLoadingDoctors] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
-  // Load doctors from Firebase
   useEffect(() => {
     const loadDoctors = async () => {
       setLoadingDoctors(true);
@@ -58,11 +51,7 @@ const PatientDashboard = () => {
         snap.forEach((doc) => {
           const data = doc.data();
           if (data.role === "doctor") {
-            list.push({
-              id: doc.id,
-              fullName: data.fullName,
-              speciality: data.speciality,
-            });
+            list.push({ id: doc.id, fullName: data.fullName, speciality: data.speciality });
           }
         });
         setDoctors(list);
@@ -76,7 +65,6 @@ const PatientDashboard = () => {
     loadDoctors();
   }, []);
 
-  // Mobile date change
   const onDateChange = (event: DateTimePickerEvent, selected?: Date) => {
     setShowDatePicker(false);
     if (event.type === "set" && selected) {
@@ -84,28 +72,27 @@ const PatientDashboard = () => {
     }
   };
 
-  // Submit appointment
   const handleSubmit = async () => {
     if (!patientName) {
-      Alert.alert("Error", "Patient not logged in.");
+      Alert.alert("Error", "Patient name missing! Check registration.");
       return;
     }
 
     if (!selectedDoctor || !date || !time) {
-      Alert.alert("Missing", "Please select doctor, date and time");
+      Alert.alert("Missing", "Please select doctor, date, and time.");
       return;
     }
 
-    const doctor = doctors.find((d) => d.id === selectedDoctor);
+    const doctor = doctors.find(d => d.id === selectedDoctor);
     if (!doctor) {
-      Alert.alert("Error", "Selected doctor not found");
+      Alert.alert("Error", "Selected doctor not found.");
       return;
     }
 
     setSubmitting(true);
 
     try {
-      // Check if slot already booked
+      // Check slot availability
       const appointmentQuery = query(
         collection(db, "appointments"),
         where("doctorId", "==", selectedDoctor),
@@ -132,16 +119,15 @@ const PatientDashboard = () => {
 
       console.log("Adding appointment:", newAppointment);
 
-      const docRef = await addDoc(collection(db, "appointments"), newAppointment);
-      console.log("Appointment added with ID:", docRef.id);
+      await addDoc(collection(db, "appointments"), newAppointment);
+      Alert.alert("Success", "Appointment booked successfully!");
 
-      Alert.alert("Success", "Appointment booked successfully");
       setSelectedDoctor("");
       setTime(null);
       setDate(new Date());
     } catch (err) {
       console.error("Error adding appointment:", err);
-      Alert.alert("Error", "Failed to book appointment");
+      Alert.alert("Error", "Failed to book appointment.");
     } finally {
       setSubmitting(false);
     }
@@ -166,56 +152,29 @@ const PatientDashboard = () => {
           backgroundColor: "#fff",
         }}
       >
-        <Text>
-          {selectedDoctor
-            ? doctors.find((d) => d.id === selectedDoctor)?.fullName
-            : "Select Doctor"}
-        </Text>
+        <Text>{selectedDoctor ? doctors.find(d => d.id === selectedDoctor)?.fullName : "Select Doctor"}</Text>
         <Text>{showDoctors ? "▲" : "▼"}</Text>
       </TouchableOpacity>
 
       {showDoctors && (
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 8,
-            backgroundColor: "#fff",
-            marginTop: 5,
-            maxHeight: 200,
-          }}
-        >
-          {loadingDoctors ? (
-            <ActivityIndicator style={{ margin: 10 }} />
-          ) : (
+        <View style={{ borderWidth: 1, borderColor: "#ddd", borderRadius: 8, backgroundColor: "#fff", marginTop: 5, maxHeight: 200 }}>
+          {loadingDoctors ? <ActivityIndicator style={{ margin: 10 }} /> : (
             <ScrollView>
-              {doctors.map((doc) => (
+              {doctors.map(doc => (
                 <TouchableOpacity
                   key={doc.id}
-                  onPress={() => {
-                    setSelectedDoctor(doc.id);
-                    setShowDoctors(false);
-                  }}
+                  onPress={() => { setSelectedDoctor(doc.id); setShowDoctors(false); }}
                   style={{
                     padding: 12,
                     borderBottomWidth: 1,
                     borderColor: "#eee",
-                    backgroundColor: selectedDoctor === doc.id ? "#f97316" : "#fff",
+                    backgroundColor: selectedDoctor === doc.id ? "#f97316" : "#fff"
                   }}
                 >
-                  <Text
-                    style={{
-                      fontWeight: "bold",
-                      color: selectedDoctor === doc.id ? "#fff" : "#000",
-                    }}
-                  >
+                  <Text style={{ fontWeight: "bold", color: selectedDoctor === doc.id ? "#fff" : "#000" }}>
                     {doc.fullName}
                   </Text>
-                  <Text
-                    style={{
-                      color: selectedDoctor === doc.id ? "#fff" : "#555",
-                    }}
-                  >
+                  <Text style={{ color: selectedDoctor === doc.id ? "#fff" : "#555" }}>
                     {doc.speciality}
                   </Text>
                 </TouchableOpacity>
@@ -231,43 +190,15 @@ const PatientDashboard = () => {
         <input
           type="date"
           value={date.toISOString().split("T")[0]}
-          onChange={(e) => {
-            const d = new Date(e.target.value);
-            if (!isNaN(d.getTime())) setDate(d);
-          }}
-          style={{
-            marginTop: 10,
-            padding: 12,
-            borderWidth: 1,
-            borderRadius: 8,
-            borderColor: "#ccc",
-            backgroundColor: "#fff",
-            width: "100%",
-          }}
+          onChange={(e) => setDate(new Date(e.target.value))}
+          style={{ marginTop: 10, padding: 12, borderWidth: 1, borderRadius: 8, borderColor: "#ccc", width: "100%" }}
         />
       ) : (
         <>
-          <TouchableOpacity
-            onPress={() => setShowDatePicker(true)}
-            style={{
-              marginTop: 10,
-              padding: 12,
-              borderWidth: 1,
-              borderRadius: 8,
-              backgroundColor: "#fff",
-            }}
-          >
+          <TouchableOpacity onPress={() => setShowDatePicker(true)} style={{ marginTop: 10, padding: 12, borderWidth: 1, borderRadius: 8, backgroundColor: "#fff" }}>
             <Text>{date.toDateString()}</Text>
           </TouchableOpacity>
-          {showDatePicker && (
-            <DateTimePicker
-              value={date}
-              mode="date"
-              minimumDate={new Date()}
-              display={Platform.OS === "ios" ? "spinner" : "default"}
-              onChange={onDateChange}
-            />
-          )}
+          {showDatePicker && <DateTimePicker value={date} mode="date" minimumDate={new Date()} display={Platform.OS === "ios" ? "spinner" : "default"} onChange={onDateChange} />}
         </>
       )}
 
@@ -275,50 +206,21 @@ const PatientDashboard = () => {
       <Text style={{ marginTop: 20, fontWeight: "bold" }}>Select Time</Text>
       <TouchableOpacity
         onPress={() => setShowTimeSlots(!showTimeSlots)}
-        style={{
-          marginTop: 10,
-          padding: 12,
-          borderWidth: 1,
-          borderRadius: 8,
-          backgroundColor: "#fff",
-        }}
+        style={{ marginTop: 10, padding: 12, borderWidth: 1, borderRadius: 8, backgroundColor: "#fff" }}
       >
         <Text>{time ?? "Select Time"}</Text>
       </TouchableOpacity>
 
       {showTimeSlots && (
-        <View
-          style={{
-            borderWidth: 1,
-            borderColor: "#ddd",
-            borderRadius: 8,
-            backgroundColor: "#fff",
-            marginTop: 5,
-            maxHeight: 150,
-          }}
-        >
+        <View style={{ borderWidth: 1, borderColor: "#ddd", borderRadius: 8, backgroundColor: "#fff", marginTop: 5, maxHeight: 150 }}>
           <ScrollView>
-            {TIME_SLOTS.map((slot) => (
+            {TIME_SLOTS.map(slot => (
               <TouchableOpacity
                 key={slot}
-                onPress={() => {
-                  setTime(slot);
-                  setShowTimeSlots(false);
-                }}
-                style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 12,
-                  backgroundColor: time === slot ? "#f97316" : "#fff",
-                }}
+                onPress={() => { setTime(slot); setShowTimeSlots(false); }}
+                style={{ paddingVertical: 10, paddingHorizontal: 12, backgroundColor: time === slot ? "#f97316" : "#fff" }}
               >
-                <Text
-                  style={{
-                    color: time === slot ? "#fff" : "#000",
-                    fontWeight: "600",
-                  }}
-                >
-                  {slot}
-                </Text>
+                <Text style={{ color: time === slot ? "#fff" : "#000", fontWeight: "600" }}>{slot}</Text>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -329,19 +231,9 @@ const PatientDashboard = () => {
       <TouchableOpacity
         onPress={handleSubmit}
         disabled={submitting}
-        style={{
-          backgroundColor: "#f97316",
-          padding: 15,
-          borderRadius: 10,
-          alignItems: "center",
-          marginTop: 30,
-        }}
+        style={{ backgroundColor: "#f97316", padding: 15, borderRadius: 10, alignItems: "center", marginTop: 30 }}
       >
-        {submitting ? (
-          <ActivityIndicator color="#fff" />
-        ) : (
-          <Text style={{ color: "#fff", fontWeight: "bold" }}>Book Appointment</Text>
-        )}
+        {submitting ? <ActivityIndicator color="#fff" /> : <Text style={{ color: "#fff", fontWeight: "bold" }}>Book Appointment</Text>}
       </TouchableOpacity>
     </ScrollView>
   );

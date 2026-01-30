@@ -7,13 +7,17 @@ import { doc, setDoc } from "firebase/firestore";
 
 export const registerPatient = async (
   email: string,
-  password: string
+  password: string,
+  fullName: string
 ) => {
   const cred = await createUserWithEmailAndPassword(auth, email, password);
+  
 
   await setDoc(doc(db, "users", cred.user.uid), {
     email,
+    fullName,
     role: "patient",
+    createdAt: new Date(),
   });
 
   return cred;

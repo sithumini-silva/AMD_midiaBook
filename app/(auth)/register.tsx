@@ -17,6 +17,7 @@ import { registerPatient } from "../../services/authService";
 const Register = () => {
   const router = useRouter();
 
+  const [fullName, setFullName] = useState(""); // ✅ Full Name
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -25,7 +26,7 @@ const Register = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleRegister = async () => {
-    if (!email || !password || !confirmPassword) {
+    if (!fullName || !email || !password || !confirmPassword) {
       Alert.alert("Missing Fields", "Please fill all fields.");
       return;
     }
@@ -43,18 +44,17 @@ const Register = () => {
     setIsLoadingReg(true);
 
     try {
-      await registerPatient(email, password);
+      await registerPatient(email, password, fullName); // ✅ pass fullName
 
-      // ✅ SUCCESS → redirect to login
       Alert.alert("Success", "Account created successfully!", [
         {
           text: "Go to Login",
           onPress: () => router.replace("/(auth)/login"),
         },
       ]);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
-      Alert.alert("Registration Failed", "Please try again.");
+      Alert.alert("Registration Failed", err.message || "Please try again.");
     } finally {
       setIsLoadingReg(false);
     }
@@ -85,6 +85,21 @@ const Register = () => {
           </Text>
 
           <View style={{ backgroundColor: "#fff", padding: 20, borderRadius: 12 }}>
+            {/* Full Name */}
+            <Text>Full Name</Text>
+            <TextInput
+              placeholder="Enter full name"
+              value={fullName}
+              onChangeText={setFullName}
+              style={{
+                borderWidth: 1,
+                borderColor: "#ccc",
+                padding: 10,
+                borderRadius: 8,
+                marginBottom: 15,
+              }}
+            />
+
             {/* Email */}
             <Text>Email</Text>
             <TextInput
@@ -150,16 +165,10 @@ const Register = () => {
                 style={{ flex: 1 }}
               />
               <TouchableOpacity
-                onPress={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
               >
                 <Ionicons
-                  name={
-                    showConfirmPassword
-                      ? "eye-off-outline"
-                      : "eye-outline"
-                  }
+                  name={showConfirmPassword ? "eye-off-outline" : "eye-outline"}
                   size={24}
                 />
               </TouchableOpacity>
@@ -185,21 +194,11 @@ const Register = () => {
               )}
             </TouchableOpacity>
 
-            {/* 🔗 Login Link */}
+            {/* Login Link */}
             <View style={{ marginTop: 20, alignItems: "center" }}>
-              <Text style={{ color: "#6b7280" }}>
-                Already have an account?
-              </Text>
-              <TouchableOpacity
-                onPress={() => router.replace("/(auth)/login")}
-              >
-                <Text
-                  style={{
-                    color: "#f97316",
-                    fontWeight: "bold",
-                    marginTop: 5,
-                  }}
-                >
+              <Text style={{ color: "#6b7280" }}>Already have an account?</Text>
+              <TouchableOpacity onPress={() => router.replace("/(auth)/login")}>
+                <Text style={{ color: "#f97316", fontWeight: "bold", marginTop: 5 }}>
                   Login
                 </Text>
               </TouchableOpacity>
