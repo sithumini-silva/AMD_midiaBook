@@ -15,16 +15,24 @@ import {
   addDoc,
   query,
   where,
-  deleteDoc,
-  doc,
 } from "firebase/firestore";
 import DateTimePicker, { DateTimePickerEvent } from "@react-native-community/datetimepicker";
 import { useAuth } from "../../context/AuthContext";
+import { useRouter } from "expo-router"; // Expo Router for navigation
 
 type Doctor = {
   id: string;
   fullName: string;
   speciality: string;
+};
+
+type Appointment = {
+  id: string;
+  doctorName: string;
+  speciality: string;
+  date: string;
+  time: string;
+  status: string;
 };
 
 const TIME_SLOTS = [
@@ -42,10 +50,12 @@ const formatDate = (d: Date) => {
 };
 
 const PatientDashboard = () => {
-  const { user } = useAuth();
+  const router = useRouter();
+  const { user, logout } = useAuth();
   const patientName = user?.fullName;
 
   const [doctors, setDoctors] = useState<Doctor[]>([]);
+  const [appointments, setAppointments] = useState<Appointment[]>([]);
   const [selectedDoctor, setSelectedDoctor] = useState<string>("");
   const [showDoctors, setShowDoctors] = useState(false);
 
@@ -56,6 +66,7 @@ const PatientDashboard = () => {
   const [showTimeSlots, setShowTimeSlots] = useState(false);
 
   const [loadingDoctors, setLoadingDoctors] = useState(false);
+  const [loadingAppointments, setLoadingAppointments] = useState(false);
   const [submitting, setSubmitting] = useState(false);
 
   // Load doctors from Firestore
@@ -82,6 +93,41 @@ const PatientDashboard = () => {
     loadDoctors();
   }, []);
 
+  // Load patient's appointments
+  useEffect(() => {
+    const loadAppointments = async () => {
+      if (!patientName) return;
+      setLoadingAppointments(true);
+      try {
+        const snap = await getDocs(
+          query(
+            collection(db, "appointments"),
+            where("patientName", "==", patientName)
+          )
+        );
+        const list: Appointment[] = [];
+        snap.forEach((doc) => {
+          const data = doc.data();
+          list.push({
+            id: doc.id, // use Firestore doc.id
+            doctorName: data.doctorName,
+            speciality: data.speciality,
+            date: data.date,
+            time: data.time,
+            status: data.status
+          });
+        });
+        setAppointments(list);
+      } catch (err) {
+        console.error(err);
+        Alert.alert("Error", "Unable to load appointments");
+      } finally {
+        setLoadingAppointments(false);
+      }
+    };
+    loadAppointments();
+  }, [patientName]);
+
   const onDateChange = (event: DateTimePickerEvent, selected?: Date) => {
     setShowDatePicker(false);
     if (event.type === "set" && selected) {
@@ -99,7 +145,6 @@ const PatientDashboard = () => {
     setSubmitting(true);
 
     try {
-      // Check if slot is already booked
       const appointmentQuery = query(
         collection(db, "appointments"),
         where("doctorId", "==", selectedDoctor),
@@ -124,11 +169,14 @@ const PatientDashboard = () => {
         createdAt: new Date(),
       };
 
-      await addDoc(collection(db, "appointments"), newAppointment);
+      const docRef = await addDoc(collection(db, "appointments"), newAppointment);
       Alert.alert("Success", "Appointment booked successfully!");
       setSelectedDoctor("");
       setTime(null);
       setDate(new Date());
+
+      // Refresh appointments list using actual doc.id
+      setAppointments((prev) => [...prev, { id: docRef.id, ...newAppointment }]);
     } catch (err) {
       console.error(err);
       Alert.alert("Error", "Failed to book appointment.");
@@ -137,9 +185,20 @@ const PatientDashboard = () => {
     }
   };
 
+  const handleLogout = async () => {
+    await logout();
+    router.replace("/login"); // redirect to login page
+  };
+
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
-      <Text style={{ fontSize: 28, fontWeight: "bold" }}>Patient Dashboard</Text>
+      {/* Header */}
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <Text style={{ fontSize: 28, fontWeight: "bold" }}>Patient Dashboard</Text>
+        <TouchableOpacity onPress={handleLogout} style={{ padding: 10, backgroundColor: "#f97316", borderRadius: 8 }}>
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>Logout</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Doctor selection */}
       <Text style={{ marginTop: 20, fontWeight: "bold" }}>Select Doctor</Text>
@@ -241,10 +300,23 @@ const PatientDashboard = () => {
       <TouchableOpacity
         onPress={handleSubmit}
         disabled={submitting}
-        style={{ backgroundColor: "#f97316", padding: 15, borderRadius: 10, alignItems: "center", marginTop: 30 }}
+        style={{ backgroundColor: "#f97316", padding: 15, borderRadius: 10, alignItems: "center", marginTop: 20 }}
       >
         {submitting ? <ActivityIndicator color="#fff" /> : <Text style={{ color: "#fff", fontWeight: "bold" }}>Book Appointment</Text>}
       </TouchableOpacity>
+
+      {/* Appointments List */}
+      <Text style={{ fontSize: 22, fontWeight: "bold", marginTop: 30 }}>Your Appointments</Text>
+      {loadingAppointments ? <ActivityIndicator style={{ marginTop: 10 }} /> : (
+        appointments.map((a) => (
+          <View key={a.id} style={{ padding: 15, marginTop: 10, borderWidth: 1, borderRadius: 10, borderColor: "#ccc", backgroundColor: "#fff" }}>
+            <Text style={{ fontWeight: "bold" }}>{a.doctorName} ({a.speciality})</Text>
+            <Text>Date: {a.date}</Text>
+            <Text>Time: {a.time}</Text>
+            <Text>Status: {a.status}</Text>
+          </View>
+        ))
+      )}
     </ScrollView>
   );
 };

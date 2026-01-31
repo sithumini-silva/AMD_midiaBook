@@ -1,5 +1,5 @@
 import React, { createContext, useEffect, useState, useContext } from "react";
-import { onAuthStateChanged } from "firebase/auth";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 import { auth, db } from "../services/firebase";
 import { doc, getDoc } from "firebase/firestore";
 
@@ -9,6 +9,7 @@ export const AuthProvider = ({ children }: any) => {
   const [user, setUser] = useState<any>(null);
   const [loading, setLoading] = useState(true);
 
+  // Listen for auth state changes
   useEffect(() => {
     const unsub = onAuthStateChanged(auth, async (firebaseUser) => {
       if (firebaseUser) {
@@ -24,7 +25,23 @@ export const AuthProvider = ({ children }: any) => {
     return () => unsub();
   }, []);
 
-  return <AuthContext.Provider value={{ user, loading }}>{children}</AuthContext.Provider>;
+  // Logout function
+  const logout = async () => {
+    try {
+      await signOut(auth);
+      setUser(null); // clear user
+      // navigation should be handled by the page using this context
+    } catch (err) {
+      console.error("Logout failed:", err);
+    }
+  };
+
+  return (
+    <AuthContext.Provider value={{ user, loading, logout }}>
+      {children}
+    </AuthContext.Provider>
+  );
 };
 
+// Hook to use AuthContext
 export const useAuth = () => useContext(AuthContext);
