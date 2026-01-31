@@ -45,21 +45,21 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 36,
     fontWeight: "bold",
-    color: "#fff",
+    color: "#fdc500",
     marginBottom: 10,
     textAlign: "center",
   },
   subtitle: {
     fontSize: 18,
-    color: "#fff",
+    color: "#ffdac6",
     marginBottom: 40,
     textAlign: "center",
   },
   button: {
-    backgroundColor: "#0748b9",
+    backgroundColor: "#5fa8d3",
     paddingVertical: 15,
     paddingHorizontal: 40,
-    borderRadius: 30,
+    borderRadius: 28,
   },
   buttonText: {
     color: "#130101",
