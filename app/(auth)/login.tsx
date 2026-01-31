@@ -28,19 +28,23 @@ const Login = () => {
       return;
     }
 
-    if (isLoadingLogin) return;
     setIsLoadingLogin(true);
 
-    await loginUser(email, password)
-      .then((res) => {
-        console.log(res);
-        router.push("/"); // Redirect handled by index.tsx
-      })
-      .catch(() => {
-        Alert.alert("Login Failed", "Invalid credentials.");
-      })
-      .finally(() => setIsLoadingLogin(false));
-  };
+    try {
+      const user = await loginUser(email, password);
+      console.log(user);
+
+      // Redirect based on role
+      if (user.role === "doctor") router.replace("/(dashboard)/doctordash");
+      else if (user.role === "admin") router.replace("/(dashboard)/admindash");
+      else router.replace("/"); // fallback
+    }catch (err: any) {
+      console.log(err);
+      Alert.alert("Login Failed", err.message || "Invalid credentials");
+    }finally {
+      setIsLoadingLogin(false);
+    }
+    };
 
   return (
     <KeyboardAvoidingView
