@@ -1,6 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons"
+import { useRouter } from "expo-router"
+import React, { useState } from "react"
 import {
   ActivityIndicator,
   Alert,
@@ -12,39 +12,39 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native";
-import { loginUser } from "../../services/authService";
+} from "react-native"
+import { loginUser } from "../../services/authService"
 
 const Login = () => {
-  const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [isLoadingLogin, setIsLoadingLogin] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
+  const router = useRouter()
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [isLoadingLogin, setIsLoadingLogin] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Please enter your email and password");
-      return;
+      Alert.alert("Error", "Please enter your email and password")
+      return
     }
 
-    setIsLoadingLogin(true);
+    setIsLoadingLogin(true)
 
     try {
-      const user = await loginUser(email, password);
-      console.log(user);
+      const user = await loginUser(email, password)
+      console.log(user)
 
       // Redirect based on role
-      if (user.role === "doctor") router.replace("/(dashboard)/doctordash");
-      else if (user.role === "admin") router.replace("/(dashboard)/admindash");
-      else router.replace("/"); // fallback
+      if (user.role === "doctor") router.replace("/(dashboard)/doctordash")
+      else if (user.role === "admin") router.replace("/(dashboard)/admindash")
+      else router.replace("/") // fallback
     }catch (err: any) {
-      console.log(err);
-      Alert.alert("Login Failed", err.message || "Invalid credentials");
+      console.log(err)
+      Alert.alert("Login Failed", err.message || "Invalid credentials")
     }finally {
-      setIsLoadingLogin(false);
+      setIsLoadingLogin(false)
     }
-    };
+    }
 
   return (
     <KeyboardAvoidingView
@@ -63,6 +63,9 @@ const Login = () => {
               placeholder="Enter email"
               value={email}
               onChangeText={setEmail}
+              autoComplete="off"        
+              textContentType="none"
+              importantForAutofill="no"
               style={{ borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8, marginBottom: 15 }}
             />
 
@@ -72,6 +75,9 @@ const Login = () => {
                 placeholder="Enter password"
                 value={password}
                 onChangeText={setPassword}
+                autoComplete="off"        
+                textContentType="none"   
+                importantForAutofill="no"
                 secureTextEntry={!showPassword}
                 style={{ flex: 1 }}
               />
@@ -98,4 +104,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default Login

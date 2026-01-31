@@ -1,6 +1,6 @@
-import { Ionicons } from "@expo/vector-icons";
-import { useRouter } from "expo-router";
-import React, { useState } from "react";
+import { Ionicons } from "@expo/vector-icons"
+import { useRouter } from "expo-router"
+import React, { useState } from "react"
 import {
   ActivityIndicator,
   Alert,
@@ -11,54 +11,54 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native";
-import { registerPatient } from "../../services/authService";
+} from "react-native"
+import { registerPatient } from "../../services/authService"
 
 const Register = () => {
-  const router = useRouter();
+  const router = useRouter()
 
-  const [fullName, setFullName] = useState(""); // ✅ Full Name
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
-  const [isLoadingReg, setIsLoadingReg] = useState(false);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [fullName, setFullName] = useState("")
+  const [email, setEmail] = useState("")
+  const [password, setPassword] = useState("")
+  const [confirmPassword, setConfirmPassword] = useState("")
+  const [isLoadingReg, setIsLoadingReg] = useState(false)
+  const [showPassword, setShowPassword] = useState(false)
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
   const handleRegister = async () => {
     if (!fullName || !email || !password || !confirmPassword) {
-      Alert.alert("Missing Fields", "Please fill all fields.");
-      return;
+      Alert.alert("Missing Fields", "Please fill all fields.")
+      return
     }
 
     if (password !== confirmPassword) {
-      Alert.alert("Password Mismatch", "Passwords do not match.");
-      return;
+      Alert.alert("Password Mismatch", "Passwords do not match.")
+      return
     }
 
     if (password.length < 6) {
-      Alert.alert("Weak Password", "Password must be at least 6 characters.");
-      return;
+      Alert.alert("Weak Password", "Password must be at least 6 characters.")
+      return
     }
 
-    setIsLoadingReg(true);
+    setIsLoadingReg(true)
 
     try {
-      await registerPatient(email, password, fullName); // ✅ pass fullName
+      await registerPatient(email, password, fullName)
 
       Alert.alert("Success", "Account created successfully!", [
         {
           text: "Go to Login",
           onPress: () => router.replace("/(auth)/login"),
         },
-      ]);
+      ])
     } catch (err: any) {
-      console.error(err);
-      Alert.alert("Registration Failed", err.message || "Please try again.");
+      console.error(err)
+      Alert.alert("Registration Failed", err.message || "Please try again.")
     } finally {
-      setIsLoadingReg(false);
+      setIsLoadingReg(false)
     }
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -207,7 +207,7 @@ const Register = () => {
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
-export default Register;
+export default Register
