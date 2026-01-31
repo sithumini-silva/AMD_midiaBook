@@ -1,6 +1,6 @@
-import { Ionicons } from "@expo/vector-icons"
-import { useRouter } from "expo-router"
-import React, { useState } from "react"
+import { Ionicons } from "@expo/vector-icons";
+import { useRouter } from "expo-router";
+import React, { useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -12,39 +12,39 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from "react-native"
-import { loginUser } from "../../services/authService"
+} from "react-native";
+import { loginUser } from "../../services/authService";
 
 const Login = () => {
-  const router = useRouter()
-  const [email, setEmail] = useState("")
-  const [password, setPassword] = useState("")
-  const [isLoadingLogin, setIsLoadingLogin] = useState(false)
-  const [showPassword, setShowPassword] = useState(false)
+  const router = useRouter();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoadingLogin, setIsLoadingLogin] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
 
   const handleLogin = async () => {
     if (!email.trim() || !password.trim()) {
-      Alert.alert("Error", "Please enter your email and password")
-      return
+      Alert.alert("Error", "Please enter your email and password");
+      return;
     }
 
-    setIsLoadingLogin(true)
+    setIsLoadingLogin(true);
 
     try {
-      const user = await loginUser(email, password)
-      console.log(user)
+      const user = await loginUser(email, password);
 
       // Redirect based on role
-      if (user.role === "doctor") router.replace("/(dashboard)/doctordash")
-      else if (user.role === "admin") router.replace("/(dashboard)/admindash")
-      else router.replace("/") // fallback
-    }catch (err: any) {
-      console.log(err)
-      Alert.alert("Login Failed", err.message || "Invalid credentials")
-    }finally {
-      setIsLoadingLogin(false)
+      if (user.role === "admin") router.replace("/(dashboard)/admindash");
+      else if (user.role === "doctor") router.replace("/(dashboard)/doctordash");
+      else router.replace("/(dashboard)/patientdash"); // fallback
+
+    } catch (err: any) {
+      console.log(err);
+      Alert.alert("Login Failed", err.message || "Invalid credentials");
+    } finally {
+      setIsLoadingLogin(false);
     }
-    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -58,25 +58,27 @@ const Login = () => {
           </Text>
 
           <View style={{ backgroundColor: "#fff", padding: 20, borderRadius: 12 }}>
+            {/* Email Input */}
             <Text>Email</Text>
             <TextInput
               placeholder="Enter email"
               value={email}
               onChangeText={setEmail}
-              autoComplete="off"        
+              autoComplete="off"
               textContentType="none"
               importantForAutofill="no"
               style={{ borderWidth: 1, borderColor: "#ccc", padding: 10, borderRadius: 8, marginBottom: 15 }}
             />
 
+            {/* Password Input */}
             <Text>Password</Text>
             <View style={{ flexDirection: "row", borderWidth: 1, borderColor: "#ccc", borderRadius: 8, padding: 10, marginBottom: 20 }}>
               <TextInput
                 placeholder="Enter password"
                 value={password}
                 onChangeText={setPassword}
-                autoComplete="off"        
-                textContentType="none"   
+                autoComplete="off"
+                textContentType="none"
                 importantForAutofill="no"
                 secureTextEntry={!showPassword}
                 style={{ flex: 1 }}
@@ -86,6 +88,7 @@ const Login = () => {
               </TouchableOpacity>
             </View>
 
+            {/* Login Button */}
             <TouchableOpacity
               onPress={handleLogin}
               disabled={isLoadingLogin}
@@ -94,6 +97,7 @@ const Login = () => {
               {isLoadingLogin ? <ActivityIndicator color="#fff" /> : <Text style={{ color: "#fff" }}>Login</Text>}
             </TouchableOpacity>
 
+            {/* Navigate to Register */}
             <Pressable onPress={() => router.push("/(auth)/register")} style={{ marginTop: 15, alignItems: "center" }}>
               <Text style={{ color: "#f97316" }}>Create Account</Text>
             </Pressable>
@@ -104,4 +108,4 @@ const Login = () => {
   );
 };
 
-export default Login
+export default Login;
