@@ -1,7 +1,8 @@
-import React, { createContext, useEffect, useState, useContext } from "react";
-import { onAuthStateChanged, signOut } from "firebase/auth";
-import { auth, db } from "../services/firebase";
-import { doc, getDoc } from "firebase/firestore";
+import React, { createContext, useEffect, useState, useContext } from "react"
+import { onAuthStateChanged, signOut } from "firebase/auth"
+import { auth, db } from "../services/firebase"
+import { doc, getDoc } from "firebase/firestore"
+import { router, useRouter } from "expo-router"
 
 const AuthContext = createContext<any>(null);
 
@@ -29,8 +30,8 @@ export const AuthProvider = ({ children }: any) => {
   const logout = async () => {
     try {
       await signOut(auth);
-      setUser(null); // clear user
-      // navigation should be handled by the page using this context
+      setUser(null);
+      router.replace("/login");
     } catch (err) {
       console.error("Logout failed:", err);
     }

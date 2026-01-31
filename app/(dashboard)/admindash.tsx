@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react"
 import {
   View,
   Text,
@@ -8,10 +8,12 @@ import {
   Alert,
   ActivityIndicator,
   FlatList,
-} from "react-native";
-import { db, auth } from "../../services/firebase";
-import { collection, getDocs, addDoc } from "firebase/firestore";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+} from "react-native"
+import { db, auth } from "../../services/firebase"
+import { collection, getDocs, addDoc } from "firebase/firestore"
+import { createUserWithEmailAndPassword } from "firebase/auth"
+import { useAuth } from "../../context/AuthContext"
+
 
 type Doctor = {
   id: string;
@@ -23,6 +25,7 @@ type Doctor = {
 };
 
 const AdminDash = () => {
+  const { logout } = useAuth();
   const [doctors, setDoctors] = useState<Doctor[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -96,6 +99,16 @@ const AdminDash = () => {
 
   return (
     <ScrollView contentContainerStyle={{ padding: 20 }}>
+       {/* Header with Logout */}
+      <View style={{ flexDirection: "row", justifyContent: "space-between", alignItems: "center", marginBottom: 20 }}>
+        <Text style={{ fontSize: 24, fontWeight: "bold" }}>Admin Dashboard</Text>
+        <TouchableOpacity
+          onPress={logout}
+          style={{ backgroundColor: "#f97316", padding: 10, borderRadius: 8 }}
+        >
+          <Text style={{ color: "#fff", fontWeight: "bold" }}>Logout</Text>
+        </TouchableOpacity>
+      </View>
       <Text style={{ fontSize: 24, fontWeight: "bold", marginBottom: 20 }}>Add Doctor</Text>
 
       <Text>Full Name</Text>
