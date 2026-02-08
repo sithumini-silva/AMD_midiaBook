@@ -1,5 +1,6 @@
 import * as WebBrowser from 'expo-web-browser';
 import * as Facebook from 'expo-auth-session/providers/facebook';
+import * as Google from 'expo-auth-session/providers/google'; // Google import කළා
 import { ResponseType } from 'expo-auth-session';
 import { Ionicons } from "@expo/vector-icons";
 import { useRouter } from "expo-router";
@@ -30,12 +31,30 @@ const Login = () => {
   const [isLoadingLogin, setIsLoadingLogin] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
+  // --- Google Login Setup ---
+  const [gRequest, gResponse, gPromptAsync] = Google.useAuthRequest({
+    androidClientId: "YOUR_ANDROID_CLIENT_ID.apps.googleusercontent.com",
+    iosClientId: "YOUR_IOS_CLIENT_ID.apps.googleusercontent.com",
+    webClientId: "YOUR_WEB_CLIENT_ID.apps.googleusercontent.com",
+  });
+
   // --- Facebook Login Setup ---
   const [request, response, promptAsync] = Facebook.useAuthRequest({
     clientId: "YOUR_FACEBOOK_APP_ID", // මෙතනට ඔයාගේ App ID එක දාන්න
     responseType: ResponseType.Token,
   });
 
+  // Google Response එක handle කිරීම
+  useEffect(() => {
+    if (gResponse?.type === 'success') {
+      const { authentication } = gResponse;
+      console.log("Google Auth Success:", authentication);
+      Alert.alert("Success", "Google Login Successful!");
+      router.replace("/(dashboard)/patientdash");
+    }
+  }, [gResponse]);
+
+  // Facebook Response එක handle කිරීම
   useEffect(() => {
     if (response?.type === 'success') {
       const { access_token } = response.params;
@@ -46,8 +65,6 @@ const Login = () => {
   const handleFacebookSuccess = async (token: string) => {
     setIsLoadingLogin(true);
     try {
-      // මෙතනදී Facebook token එක පාවිච්චි කරලා Firebase එකට log වෙන්න පුළුවන්
-      // උදාහරණයක් ලෙස: signInWithCredential(auth, FacebookAuthProvider.credential(token))
       Alert.alert("Success", "Facebook Login Successful!");
       router.replace("/(dashboard)/patientdash");
     } catch (error) {
@@ -86,7 +103,6 @@ const Login = () => {
         </View>
 
         <View style={styles.card}>
-          {/* Email & Password inputs... (ඔයාගේ කලින් code එකමයි) */}
           <View style={styles.inputWrapper}>
              <Ionicons name="person-outline" size={20} color="#5fa8d3" style={styles.inputIcon} />
              <View style={styles.inputContent}>
@@ -116,12 +132,16 @@ const Login = () => {
         <View style={styles.dividerContainer}><View style={styles.line} /><Text style={styles.dividerText}>Quick Access</Text><View style={styles.line} /></View>
 
         <View style={styles.socialRow}>
-          <TouchableOpacity style={styles.socialButton}>
+          {/* Google Button - දැන් මෙය වැඩ කරයි */}
+          <TouchableOpacity 
+            style={styles.socialButton}
+            disabled={!gRequest}
+            onPress={() => gPromptAsync()}
+          >
             <Image source={require('../../assets/images/google.png')} style={{ width: 20, height: 20, marginRight: 8 }} />
             <Text style={styles.socialText}>Google</Text>
           </TouchableOpacity>
 
-          {/* Facebook Button සැබෑ ලෙසම වැඩ කරන එක */}
           <TouchableOpacity 
             style={styles.socialButton} 
             disabled={!request} 
@@ -137,7 +157,6 @@ const Login = () => {
   );
 };
 
-// Styles (same as before)
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f7fafc" },
   scrollContent: { flexGrow: 1, paddingBottom: 40 },
