@@ -13,7 +13,9 @@ import {
   TouchableOpacity,
   View,
   Image,
+  StyleSheet,
 } from "react-native";
+import { LinearGradient } from 'expo-linear-gradient';
 import { loginUser } from "../../services/authService";
 
 const Login = () => {
@@ -28,19 +30,13 @@ const Login = () => {
       Alert.alert("Error", "Please enter your email and password");
       return;
     }
-
     setIsLoadingLogin(true);
-
     try {
       const user = await loginUser(email, password);
-
-      // Redirect based on role
       if (user.role === "admin") router.replace("/(dashboard)/admindash");
       else if (user.role === "doctor") router.replace("/(dashboard)/doctordash");
-      else router.replace("/(dashboard)/patientdash"); // fallback
-
+      else router.replace("/(dashboard)/patientdash");
     } catch (err: any) {
-      console.log(err);
       Alert.alert("Login Failed", err.message || "Invalid credentials");
     } finally {
       setIsLoadingLogin(false);
@@ -50,444 +46,171 @@ const Login = () => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === "ios" ? "padding" : "height"}
-      style={{ flex: 1, backgroundColor: "#FFFFFF" }}
+      style={styles.container}
     >
-      <ScrollView 
-        contentContainerStyle={{ 
-          flexGrow: 1, 
-          paddingVertical: 40 
-        }}
-        showsVerticalScrollIndicator={false}
-      >
-        {/* Header Section with BookMyDoctor Logo */}
-        <View style={{ alignItems: "center", marginTop: 40, marginBottom: 20 }}>
-          {/* Logo Container */}
-          <View style={{
-            width: 140,
-            height: 140,
-            backgroundColor: "#5fa8d3",
-            borderRadius: 70,
-            justifyContent: "center",
-            alignItems: "center",
-            marginBottom: 20,
-            shadowColor: "#5fa8d3",
-            shadowOffset: { width: 0, height: 8 },
-            shadowOpacity: 0.3,
-            shadowRadius: 12,
-            elevation: 8,
-            borderWidth: 5,
-            borderColor: "#FFFFFF",
-            overflow: "hidden"
-          }}>
-            {/* Medical Cross Symbol inside Logo */}
-            <View style={{
-              width: 100,
-              height: 100,
-              backgroundColor: "#FFFFFF",
-              borderRadius: 50,
-              justifyContent: "center",
-              alignItems: "center",
-              position: "relative"
-            }}>
-              {/* Medical Cross */}
-              <View style={{
-                position: "absolute",
-                width: 60,
-                height: 60,
-                justifyContent: "center",
-                alignItems: "center"
-              }}>
-                {/* Vertical line */}
-                <View style={{
-                  width: 12,
-                  height: 60,
-                  backgroundColor: "#5fa8d3",
-                  borderRadius: 6,
-                  position: "absolute"
-                }} />
-                {/* Horizontal line */}
-                <View style={{
-                  width: 60,
-                  height: 12,
-                  backgroundColor: "#5fa8d3",
-                  borderRadius: 6,
-                  position: "absolute"
-                }} />
-              </View>
-              
-              {/* Alternatively, you can use an icon */}
-              {/* <Ionicons name="medical" size={50} color="#5fa8d3" /> */}
-            </View>
-          </View>
-          
-          {/* Brand Name with Styling */}
-          <View style={{ alignItems: "center" }}>
-            <Text style={{ 
-              fontSize: 36, 
-              fontWeight: "900", 
-              color: "#5fa8d3",
-              letterSpacing: 1,
-              marginBottom: 4,
-              textShadowColor: "rgba(95, 168, 211, 0.2)",
-              textShadowOffset: { width: 1, height: 1 },
-              textShadowRadius: 3
-            }}>
-              BookMyDoctor
-            </Text>
-            
-            {/* Tagline */}
-            <Text style={{ 
-              fontSize: 14, 
-              color: "#718096",
-              fontWeight: "500",
-              letterSpacing: 2,
-              textTransform: "uppercase",
-              marginBottom: 8
-            }}>
-              Healthcare Simplified
-            </Text>
-            
-            {/* Divider */}
-            <View style={{
-              width: 80,
-              height: 3,
-              backgroundColor: "#5fa8d3",
-              borderRadius: 2,
-              marginVertical: 12
-            }} />
-          </View>
-          
-          {/* Welcome Text */}
-          <Text style={{ 
-            fontSize: 26, 
-            fontWeight: "700", 
-            color: "#2d3748",
-            marginTop: 20,
-            textAlign: "center"
-          }}>
-            Welcome Back!
-          </Text>
-          
-          <Text style={{ 
-            fontSize: 15, 
-            color: "#718096",
-            marginTop: 8,
-            textAlign: "center",
-            paddingHorizontal: 40,
-            lineHeight: 22
-          }}>
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        
+        {/* Logo Section */}
+        <View style={styles.headerSection}>
+          <Image 
+            source={require('../../assets/images/logo.png')} // ඔයාගේ logo එකේ path එක මෙතනට දෙන්න
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.welcomeTitle}>Welcome Back!</Text>
+          <Text style={styles.subTitle}>
             Sign in to access your medical consultations and appointments
           </Text>
         </View>
 
-        {/* Form Container */}
-        <View style={{ paddingHorizontal: 24, marginTop: 10 }}>
-          <View style={{ 
-            backgroundColor: "#FFFFFF", 
-            borderRadius: 20, 
-            padding: 24,
-            borderWidth: 1,
-            borderColor: "#e2e8f0",
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.05,
-            shadowRadius: 10,
-            elevation: 3
-          }}>
-            {/* Email Input */}
-            <View style={{ marginBottom: 20 }}>
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                <Ionicons name="person-circle-outline" size={18} color="#5fa8d3" />
-                <Text style={{ 
-                  color: "#4a5568", 
-                  fontWeight: "600", 
-                  fontSize: 14,
-                  marginLeft: 6
-                }}>
-                  Email Address
-                </Text>
-              </View>
-              <View style={{ 
-                flexDirection: "row", 
-                alignItems: "center", 
-                borderWidth: 1, 
-                borderColor: "#cbd5e0", 
-                borderRadius: 12, 
-                paddingHorizontal: 16,
-                paddingVertical: 14,
-                backgroundColor: "#f8fafc"
-              }}>
-                <Ionicons name="mail-outline" size={22} color="#718096" />
-                <TextInput
-                  placeholder="Enter your email"
-                  placeholderTextColor="#a0aec0"
-                  value={email}
-                  onChangeText={setEmail}
-                  autoComplete="off"
-                  textContentType="none"
-                  importantForAutofill="no"
-                  style={{ 
-                    flex: 1, 
-                    marginLeft: 12,
-                    fontSize: 16,
-                    color: "#2d3748"
-                  }}
-                />
-              </View>
+        {/* Card Container */}
+        <View style={styles.card}>
+          {/* Email Input */}
+          <View style={styles.inputWrapper}>
+            <Ionicons name="person-outline" size={20} color="#5fa8d3" style={styles.inputIcon} />
+            <View style={styles.inputContent}>
+              <Text style={styles.inputLabel}>Email Address</Text>
+              <TextInput
+                placeholder="Enter your email"
+                placeholderTextColor="#a0aec0"
+                value={email}
+                onChangeText={setEmail}
+                style={styles.textInput}
+                keyboardType="email-address"
+                autoCapitalize="none"
+              />
             </View>
+          </View>
 
-            {/* Password Input */}
-            <View style={{ marginBottom: 20 }}>
-              <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 8 }}>
-                <Ionicons name="key-outline" size={18} color="#5fa8d3" />
-                <Text style={{ 
-                  color: "#4a5568", 
-                  fontWeight: "600", 
-                  fontSize: 14,
-                  marginLeft: 6
-                }}>
-                  Password
-                </Text>
-              </View>
-              <View style={{ 
-                flexDirection: "row", 
-                alignItems: "center", 
-                borderWidth: 1, 
-                borderColor: "#cbd5e0", 
-                borderRadius: 12, 
-                paddingHorizontal: 16,
-                paddingVertical: 14,
-                backgroundColor: "#f8fafc"
-              }}>
-                <Ionicons name="lock-closed-outline" size={22} color="#718096" />
-                <TextInput
-                  placeholder="Enter your password"
-                  placeholderTextColor="#a0aec0"
-                  value={password}
-                  onChangeText={setPassword}
-                  autoComplete="off"
-                  textContentType="none"
-                  importantForAutofill="no"
-                  secureTextEntry={!showPassword}
-                  style={{ 
-                    flex: 1, 
-                    marginLeft: 12,
-                    fontSize: 16,
-                    color: "#2d3748"
-                  }}
-                />
-                <TouchableOpacity 
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={{ padding: 4 }}
-                >
-                  <Ionicons 
-                    name={showPassword ? "eye-off-outline" : "eye-outline"} 
-                    size={24} 
-                    color="#718096" 
-                  />
-                </TouchableOpacity>
-              </View>
+          {/* Password Input */}
+          <View style={styles.inputWrapper}>
+            <Ionicons name="lock-closed-outline" size={20} color="#5fa8d3" style={styles.inputIcon} />
+            <View style={styles.inputContent}>
+              <Text style={styles.inputLabel}>Password</Text>
+              <TextInput
+                placeholder="Enter your password"
+                placeholderTextColor="#a0aec0"
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!showPassword}
+                style={styles.textInput}
+              />
             </View>
-
-            {/* Forgot Password Link */}
-            <TouchableOpacity style={{ alignSelf: "flex-end", marginBottom: 30 }}>
-              <View style={{ flexDirection: "row", alignItems: "center" }}>
-                <Ionicons name="keypad-outline" size={16} color="#5fa8d3" />
-                <Text style={{ 
-                  color: "#5fa8d3", 
-                  fontWeight: "600",
-                  fontSize: 14,
-                  marginLeft: 4
-                }}>
-                  Forgot Password?
-                </Text>
-              </View>
+            <TouchableOpacity onPress={() => setShowPassword(!showPassword)}>
+              <Ionicons name={showPassword ? "eye-off-outline" : "eye-outline"} size={20} color="#a0aec0" />
             </TouchableOpacity>
+          </View>
 
-            {/* Sign In Button */}
-            <TouchableOpacity
-              onPress={handleLogin}
-              disabled={isLoadingLogin}
-              style={{ 
-                backgroundColor: "#5fa8d3", 
-                borderRadius: 12, 
-                paddingVertical: 16,
-                alignItems: "center",
-                shadowColor: "#5fa8d3",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: 0.2,
-                shadowRadius: 8,
-                elevation: 4,
-                flexDirection: "row",
-                justifyContent: "center"
-              }}
+          {/* Forgot Password & Register Link */}
+          <View style={styles.linkRow}>
+            <Text style={styles.newText}>New to MediBook? 
+              <Text style={styles.linkText} onPress={() => router.push("/(auth)/register")}> Create Account</Text>
+            </Text>
+            <TouchableOpacity>
+              <Text style={styles.linkText}>Forgot?</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Sign In Button with Gradient */}
+          <TouchableOpacity onPress={handleLogin} disabled={isLoadingLogin}>
+            <LinearGradient
+              colors={['#5fa8d3', '#89d4cf']}
+              start={{ x: 0, y: 0 }}
+              end={{ x: 1, y: 0 }}
+              style={styles.signInButton}
             >
-              <Ionicons name="log-in-outline" size={22} color="#FFFFFF" style={{ marginRight: 8 }} />
               {isLoadingLogin ? (
-                <ActivityIndicator color="#FFFFFF" size="small" />
+                <ActivityIndicator color="#FFF" />
               ) : (
-                <Text style={{ 
-                  color: "#FFFFFF", 
-                  fontSize: 18, 
-                  fontWeight: "bold"
-                }}>
-                  Sign In
-                </Text>
+                <View style={styles.buttonInner}>
+                  <Ionicons name="person-circle-outline" size={24} color="#FFF" />
+                  <Text style={styles.signInText}>Sign In</Text>
+                </View>
               )}
-            </TouchableOpacity>
-          </View>
-
-          {/* Sign Up Link */}
-          <View style={{ alignItems: "center", marginTop: 24 }}>
-            <Text style={{ 
-              color: "#718096",
-              fontSize: 15
-            }}>
-              New to BookMyDoctor?{" "}
-              <Pressable 
-                onPress={() => router.push("/(auth)/register")}
-                style={{ marginLeft: 4 }}
-              >
-                <Text style={{ 
-                  color: "#5fa8d3", 
-                  fontWeight: "bold",
-                  fontSize: 15
-                }}>
-                  Create Account
-                </Text>
-              </Pressable>
-            </Text>
-          </View>
-
-          {/* Divider */}
-          <View style={{ 
-            flexDirection: "row", 
-            alignItems: "center", 
-            marginVertical: 32 
-          }}>
-            <View style={{ 
-              flex: 1, 
-              height: 1, 
-              backgroundColor: "#e2e8f0" 
-            }} />
-            <Text style={{ 
-              marginHorizontal: 16, 
-              color: "#a0aec0",
-              fontSize: 14,
-              fontWeight: "500"
-            }}>
-              Quick Access
-            </Text>
-            <View style={{ 
-              flex: 1, 
-              height: 1, 
-              backgroundColor: "#e2e8f0" 
-            }} />
-          </View>
-
-          {/* Social Login Buttons */}
-          <View style={{ 
-            flexDirection: "row", 
-            justifyContent: "center", 
-            gap: 16 
-          }}>
-            <TouchableOpacity style={{ 
-              flexDirection: "row",
-              alignItems: "center",
-              borderWidth: 1, 
-              borderColor: "#e2e8f0", 
-              borderRadius: 12, 
-              paddingHorizontal: 20,
-              paddingVertical: 12,
-              flex: 1,
-              justifyContent: "center",
-              backgroundColor: "#f8fafc"
-            }}>
-              <Ionicons name="logo-google" size={20} color="#DB4437" />
-              <Text style={{ 
-                marginLeft: 8,
-                color: "#4a5568",
-                fontWeight: "500"
-              }}>
-                Google
-              </Text>
-            </TouchableOpacity>
-            
-            <TouchableOpacity style={{ 
-              flexDirection: "row",
-              alignItems: "center",
-              borderWidth: 1, 
-              borderColor: "#e2e8f0", 
-              borderRadius: 12, 
-              paddingHorizontal: 20,
-              paddingVertical: 12,
-              flex: 1,
-              justifyContent: "center",
-              backgroundColor: "#f8fafc"
-            }}>
-              <Ionicons name="logo-apple" size={20} color="#000000" />
-              <Text style={{ 
-                marginLeft: 8,
-                color: "#4a5568",
-                fontWeight: "500"
-              }}>
-                Apple
-              </Text>
-            </TouchableOpacity>
-          </View>
+            </LinearGradient>
+          </TouchableOpacity>
         </View>
 
-        {/* Footer Note */}
-        <View style={{ 
-          alignItems: "center", 
-          marginTop: 48,
-          marginBottom: 32,
-          paddingHorizontal: 24
-        }}>
-          <View style={{ 
-            flexDirection: "row", 
-            alignItems: "center",
-            marginBottom: 12
-          }}>
-            <Ionicons name="shield-checkmark-outline" size={18} color="#5fa8d3" />
-            <Text style={{ 
-              color: "#a0aec0",
-              fontSize: 13,
-              marginLeft: 6
-            }}>
-              Your data is securely encrypted
-            </Text>
+        {/* Quick Access Section */}
+        <View style={styles.dividerContainer}>
+          <View style={styles.line} />
+          <Text style={styles.dividerText}>Quick Access</Text>
+          <View style={styles.line} />
+        </View>
+
+        <View style={styles.socialRow}>
+          <TouchableOpacity style={styles.socialButton}>
+            <Ionicons name="logo-google" size={20} color="#DB4437" />
+            <Text style={styles.socialText}>Google</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.socialButton}>
+            <Ionicons name="logo-apple" size={20} color="#000" />
+            <Text style={styles.socialText}>Apple</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>© 2026 MediBook. All rights reserved.</Text>
+          <View style={styles.footerLinks}>
+            <Text style={styles.footerLink}>Terms of Service</Text>
+            <Text style={styles.footerLink}>Privacy Policy</Text>
           </View>
-          
-          <Text style={{ 
-            color: "#a0aec0",
-            fontSize: 13,
-            textAlign: "center",
-            lineHeight: 18
-          }}>
-            By signing in, you agree to our{" "}
-            <Text style={{ color: "#5fa8d3", fontWeight: "500" }}>
-              Terms of Service
-            </Text>{" "}
-            and{" "}
-            <Text style={{ color: "#5fa8d3", fontWeight: "500" }}>
-              Privacy Policy
-            </Text>
-          </Text>
-          
-          {/* Copyright */}
-          <Text style={{ 
-            color: "#cbd5e0",
-            fontSize: 12,
-            marginTop: 16,
-            fontWeight: "500"
-          }}>
-            © 2024 BookMyDoctor. All rights reserved.
-          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+  container: { flex: 1, backgroundColor: "#f7fafc" },
+  scrollContent: { flexGrow: 1, paddingBottom: 40 },
+  headerSection: { alignItems: "center", marginTop: 60, marginBottom: 30, paddingHorizontal: 30 },
+  logo: { width: 120, height: 120, marginBottom: 10 },
+  welcomeTitle: { fontSize: 28, fontWeight: "800", color: "#1a202c" },
+  subTitle: { fontSize: 14, color: "#718096", textAlign: "center", marginTop: 8, lineHeight: 20 },
+  card: {
+    backgroundColor: "#FFF",
+    marginHorizontal: 24,
+    borderRadius: 24,
+    padding: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 10 },
+    shadowOpacity: 0.05,
+    shadowRadius: 20,
+    elevation: 5,
+  },
+  inputWrapper: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: "#e2e8f0",
+    borderRadius: 16,
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+    marginBottom: 16,
+    backgroundColor: "#fbfcfd",
+  },
+  inputIcon: { marginRight: 12 },
+  inputContent: { flex: 1 },
+  inputLabel: { fontSize: 11, fontWeight: "700", color: "#a0aec0", textTransform: "uppercase" },
+  textInput: { fontSize: 16, color: "#2d3748", marginTop: 2 },
+  linkRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 25, paddingHorizontal: 4 },
+  newText: { fontSize: 13, color: "#718096" },
+  linkText: { fontSize: 13, color: "#5fa8d3", fontWeight: "700" },
+  signInButton: { borderRadius: 30, paddingVertical: 15, shadowColor: "#5fa8d3", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
+  buttonInner: { flexDirection: "row", justifyContent: "center", alignItems: "center" },
+  signInText: { color: "#FFF", fontSize: 18, fontWeight: "700", marginLeft: 10 },
+  dividerContainer: { flexDirection: "row", alignItems: "center", marginVertical: 30, paddingHorizontal: 40 },
+  line: { flex: 1, height: 1, backgroundColor: "#e2e8f0" },
+  dividerText: { marginHorizontal: 15, color: "#a0aec0", fontSize: 13, fontWeight: "600" },
+  socialRow: { flexDirection: "row", justifyContent: "center", gap: 15, paddingHorizontal: 24 },
+  socialButton: { flex: 1, flexDirection: "row", alignItems: "center", justifyContent: "center", backgroundColor: "#FFF", paddingVertical: 12, borderRadius: 15, borderWidth: 1, borderColor: "#e2e8f0" },
+  socialText: { marginLeft: 8, fontWeight: "600", color: "#4a5568" },
+  footer: { marginTop: 40, alignItems: "center" },
+  footerText: { fontSize: 12, color: "#cbd5e0" },
+  footerLinks: { flexDirection: "row", gap: 15, marginTop: 10 },
+  footerLink: { fontSize: 12, color: "#5fa8d3", fontWeight: "500" },
+});
 
 export default Login;
