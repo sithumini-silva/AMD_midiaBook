@@ -17,6 +17,7 @@ import {
 } from "react-native";
 import { LinearGradient } from 'expo-linear-gradient';
 import { loginUser } from "../../services/authService";
+import { AntDesign } from "@expo/vector-icons";
 
 const Login = () => {
   const router = useRouter();
@@ -53,7 +54,7 @@ const Login = () => {
         {/* Logo Section */}
         <View style={styles.headerSection}>
           <Image 
-            source={require('../../assets/images/logo.png')} // ඔයාගේ logo එකේ path එක මෙතනට දෙන්න
+            source={require('../../assets/images/logo.png')} 
             style={styles.logo}
             resizeMode="contain"
           />
@@ -140,12 +141,15 @@ const Login = () => {
 
         <View style={styles.socialRow}>
           <TouchableOpacity style={styles.socialButton}>
-            <Ionicons name="logo-google" size={20} color="#DB4437" />
+            <Image 
+              source={require('../../assets/images/google.png')} // ඔයාගේ google logo එකේ path එක මෙතනට දෙන්න
+              style={{ width: 20, height: 20, marginRight: 8 }} 
+            />
             <Text style={styles.socialText}>Google</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.socialButton}>
-            <Ionicons name="logo-apple" size={20} color="#000" />
-            <Text style={styles.socialText}>Apple</Text>
+          <Ionicons name="logo-facebook" size={20} color="#1877F2" />
+            <Text style={styles.socialText}>Facebook</Text>
           </TouchableOpacity>
         </View>
 
@@ -165,8 +169,8 @@ const Login = () => {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f7fafc" },
   scrollContent: { flexGrow: 1, paddingBottom: 40 },
-  headerSection: { alignItems: "center", marginTop: 60, marginBottom: 30, paddingHorizontal: 30 },
-  logo: { width: 120, height: 120, marginBottom: 10 },
+  headerSection: { alignItems: "center", marginTop: -40, marginBottom: 30, paddingHorizontal: 30 },
+  logo: { width: 250, height: 250, marginBottom: -40 },
   welcomeTitle: { fontSize: 28, fontWeight: "800", color: "#1a202c" },
   subTitle: { fontSize: 14, color: "#718096", textAlign: "center", marginTop: 8, lineHeight: 20 },
   card: {
@@ -195,7 +199,7 @@ const styles = StyleSheet.create({
   inputContent: { flex: 1 },
   inputLabel: { fontSize: 11, fontWeight: "700", color: "#a0aec0", textTransform: "uppercase" },
   textInput: { fontSize: 16, color: "#2d3748", marginTop: 2 },
-  linkRow: { flexDirection: "row", justifyContent: "space-between", marginBottom: 25, paddingHorizontal: 4 },
+  linkRow: { flexDirection: "row", justifyContent: "center", marginBottom: 25, paddingHorizontal: 4 },
   newText: { fontSize: 13, color: "#718096" },
   linkText: { fontSize: 13, color: "#5fa8d3", fontWeight: "700" },
   signInButton: { borderRadius: 30, paddingVertical: 15, shadowColor: "#5fa8d3", shadowOffset: { width: 0, height: 4 }, shadowOpacity: 0.3, shadowRadius: 8, elevation: 4 },
