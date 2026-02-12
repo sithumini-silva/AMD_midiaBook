@@ -136,6 +136,20 @@ const Login = () => {
               )}
             </LinearGradient>
           </TouchableOpacity>
+          {/* ================= REGISTER LINK ADDED ================= */}
+          {/* When user clicks this, navigate to Register Page */}
+          <View style={styles.registerContainer}>
+            <Text style={styles.registerText}>
+              Don't have an account?
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push("/(auth)/register")}
+            >
+              <Text style={styles.registerLink}>
+                {" "}Sign Up
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -203,6 +217,20 @@ const styles = StyleSheet.create({
   signInText: {
     color: "#FFF",
     fontSize: 18,
+    fontWeight: "700",
+  },
+  registerContainer: {
+    flexDirection: "row",
+    justifyContent: "center",
+    marginTop: 20,
+  },
+  registerText: {
+    color: "#718096",
+    fontSize: 14,
+  },
+  registerLink: {
+    color: "#5fa8d3",
+    fontSize: 14,
     fontWeight: "700",
   },
 });
