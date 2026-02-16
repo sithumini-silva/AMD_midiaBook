@@ -180,7 +180,7 @@ const Register = () => {
   );
 };
 
-// Styles - ඇතුළත logo එකට අදාළ style එකත් ඇතුළත් කර ඇත.
+
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#f7fafc" },
   scrollContent: { flexGrow: 1, paddingBottom: 40, paddingHorizontal: 24 },
