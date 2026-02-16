@@ -32,7 +32,11 @@ export const registerPatient = async (
 }
 
 export const loginUser = async (email: string, password: string): Promise<UserData> => {
+
+  console.log(email," ",password)
+
   const cred = await signInWithEmailAndPassword(auth, email, password)
+
 
   const snap = await getDoc(doc(db, "users", cred.user.uid))
   if (!snap.exists()) throw new Error("User not found")

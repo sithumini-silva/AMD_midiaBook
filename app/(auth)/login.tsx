@@ -42,6 +42,7 @@ const Login = () => {
         router.replace("/(dashboard)/patientdash");
     } catch (err: any) {
       Alert.alert("Login Failed", err.message || "Invalid credentials");
+      throw err
     } finally {
       setIsLoadingLogin(false);
     }

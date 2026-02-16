@@ -27,9 +27,6 @@ import CoverPage from "./(dashboard)/CoverPage";
 
 export default function Index() {
   const router = useRouter();
-
    return <CoverPage />
-
-  return null;
 }
 
